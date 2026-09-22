@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String       @id @default(cuid())
+  email     String       @unique
+  name      String
+  role      String       @default("USER")
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  basket    BasketItem[]
+}
+
+model Brand {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  goods     Good[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String
+  parentId  String?
+  parent    Category?  @relation("Tree", fields: [parentId], references: [id])
+  children  Category[] @relation("Tree")
+  goods     Good[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Size {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Good {
+  id          String       @id @default(cuid())
+  name        String
+  description String
+  price       Int
+  image       String
+  stock       Int          @default(0)
+  sizes       String       @default("")
+  brandId     String
+  categoryId  String
+  brand       Brand        @relation(fields: [brandId], references: [id])
+  category    Category     @relation(fields: [categoryId], references: [id])
+  basketItems BasketItem[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model News {
+  id        String   @id @default(cuid())
+  title     String
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BasketItem {
+  id     String @id @default(cuid())
+  count  Int    @default(1)
+  userId String
+  goodId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  good Good @relation(fields: [goodId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, goodId])
+}
