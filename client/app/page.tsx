@@ -2,7 +2,7 @@
 
 import {useEffect,useMemo,useState} from 'react';
 
-const API=process.env.NEXT_PUBLIC_API_URL||'http://localhost:4000/api/v1';
+const API='https://urbanline-shop-production.up.railway.app/api/v1';
 
 type Good={id:string;name:string;description:string;price:number;image:string;stock:number;sizes?:string;brand?:{name:string};category?:{name:string}};
 type News={id:string;title:string;text:string;createdAt:string};
